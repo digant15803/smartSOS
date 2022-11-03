@@ -1,3 +1,8 @@
+import { fileURLToPath } from "url";
+import path from "path";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 import express from 'express'
 import http from 'http'
 import { Server } from 'socket.io'
@@ -8,7 +13,7 @@ const app = express()
 const httpServer = http.createServer(app)
 const io = new Server(httpServer, { cors: { origin: '*' } })
 
-app.use(express.static('views'))
+app.use(express.static(path.join(__dirname, "public")))
 
 let buttonState = false;
 
