@@ -11,7 +11,14 @@ dotenv.config();
 
 const app = express()
 const httpServer = http.createServer(app)
-const io = new Server(httpServer, { cors: { origin: '*' } })
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+        transports: ["websocket", "polling"],
+    },
+    allowEIO3: true,
+});
 
 app.use(express.static(path.join(__dirname, "public")))
 
