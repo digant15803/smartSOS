@@ -22,12 +22,12 @@ const io = new Server(httpServer, {
 
 app.use(express.static(path.join(__dirname, "public")))
 
-let buttonState = false;
+let buttonState = "Reading....";
 
 io.on('connection', socket => {
     console.log('New Connection');
 
-    io.to(socket.id).emit('buttonState', buttonState);
+    //io.to(socket.id).emit('buttonState', buttonState);
 
     socket.on('disconnect', () => {
         console.log('Disconnected');
@@ -41,7 +41,7 @@ io.on('connection', socket => {
 })
 
 app.get('/', (req, res) => {
-    res.render('index.html')
+    res.render('index.html');
 })
 
 httpServer.listen(process.env.PORT || 4001, () => {

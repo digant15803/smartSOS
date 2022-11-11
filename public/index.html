@@ -61,7 +61,7 @@
 
 <body>
     <div class="app">
-        <button id="toggleBtn">Button</button>
+        <h1 id="toggleBtn">Reading...</h1>
     </div>
 
     <script>
@@ -69,18 +69,18 @@
 
         const toggleBtn = document.getElementById('toggleBtn');
 
-        let buttonState = false;
+        let buttonState = "Reading....";
 
-        toggleBtn.addEventListener('click', () => {
-            console.log(buttonState);
-            updateUI();
-            buttonState = !buttonState;
-            socket.emit('buttonState', buttonState);
-        });
+        // toggleBtn.addEventListener('click', () => {
+        //     console.log(buttonState);
+        //     updateUI();
+        //     buttonState = !buttonState;
+        //     socket.emit('buttonState', buttonState);
+        // });
 
         const updateUI = () => {
-            buttonState ? toggleBtn.classList.add('on') : toggleBtn.classList.remove('on');
-            toggleBtn.innerText = buttonState ? 'TURN ON' : 'TURN OFF';
+            //buttonState ? toggleBtn.classList.add('on') : toggleBtn.classList.remove('on');
+            toggleBtn.innerText = state;
         }
 
         socket.on('buttonState', state => {
