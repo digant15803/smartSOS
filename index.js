@@ -27,7 +27,7 @@ let buttonState = "Reading....";
 io.on('connection', socket => {
     console.log('New Connection');
 
-    //io.to(socket.id).emit('buttonState', buttonState);
+    io.to(socket.id).emit('buttonState', buttonState);
 
     socket.on('disconnect', () => {
         console.log('Disconnected');
