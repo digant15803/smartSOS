@@ -80,7 +80,7 @@
 
         const updateUI = () => {
             //buttonState ? toggleBtn.classList.add('on') : toggleBtn.classList.remove('on');
-            toggleBtn.innerText = state;
+            toggleBtn.innerText = buttonState;
         }
 
         socket.on('buttonState', state => {
