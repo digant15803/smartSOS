@@ -1,49 +1,74 @@
-import { fileURLToPath } from "url";
-import path from "path";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { createServer } from "http";
+import { parse } from "url";
+import { WebSocketServer } from "ws";
 
-import express from 'express'
-import http from 'http'
-import { Server } from 'socket.io'
-import dotenv from 'dotenv';
-dotenv.config();
+// Create the https server
+const server = createServer();
+// Create two instance of the websocket server
+const wss1 = new WebSocketServer({ noServer: true });
+const wss2 = new WebSocketServer({ noServer: true });
 
-const app = express()
-const httpServer = http.createServer(app)
-const io = new Server(httpServer, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"],
-        transports: ["websocket", "polling"],
-    },
-    allowEIO3: true,
+// Take note of client or users connected
+const users = new Set();
+
+/*For the first connection "/request" path
+ We take note of the clients that initiated connection and saved it in our list
+ */
+wss1.on("connection", function connection(socket) {
+  console.log("wss1:: User connected");
+  const userRef = {
+    socket: socket,
+    connectionDate: Date.now(),
+  };
+  console.log("Adding to set");
+  users.add(userRef);
 });
 
-app.use(express.static(path.join(__dirname, "public")))
+/*
+ For the second connection "/sendSensorData" path
+ This is where we received the sensor reads from the ESP32 Dev module.
+ Upon receiving the sensor read, we broadcast it to all the client listener
+*/
+wss2.on("connection", function connection(ws) {
+  console.log("wss2:: socket connection ");
+  ws.on('message', function message(data) {
+      const now = Date.now();
 
-let buttonState = "Reading....";
-
-io.on('connection', socket => {
-    console.log('New Connection');
-
-    //io.to(socket.id).emit('buttonState', buttonState);
-
-    socket.on('disconnect', () => {
-        console.log('Disconnected');
-    })
-
-    socket.on('buttonState', value => {
-        console.log('buttonState: ', buttonState);
-        buttonState = value;
-        socket.broadcast.emit('buttonState', value);
-    })
-})
-
-app.get('/', (req, res) => {
-    res.render('index.html');
-})
-
-httpServer.listen(process.env.PORT || 4001, () => {
-    console.log('Running on PORT: ', httpServer.address());
+      const parseData = JSON.parse(data);
+      let message = { date: now, sensorData: parseData.value };
+      const jsonMessage = JSON.stringify(message);
+      sendMessage(jsonMessage);
+  });
 });
+
+
+/*
+This is the part where we create the two paths.  
+Initial connection is on HTTP but is upgraded to websockets
+The two path "/request" and "/sendSensorData" is defined here
+*/
+server.on("upgrade", function upgrade(request, socket, head) {
+  const { pathname } = parse(request.url);
+  console.log(`Path name ${pathname}`);
+
+  if (pathname === "/request") {
+    wss1.handleUpgrade(request, socket, head, function done(ws) {
+      wss1.emit("connection", ws, request);
+    });
+  } else if (pathname === "/sendSensorData") {
+    wss2.handleUpgrade(request, socket, head, function done(ws) {
+      wss2.emit("connection", ws, request);
+    });
+  } else {
+    socket.destroy();
+  }
+});
+
+server.listen(8080);
+
+const sendMessage = (message) => {
+  // console.log("Sending messages to users!");
+  for (const user of users) {
+    user.socket.send(message);
+  }
+};
