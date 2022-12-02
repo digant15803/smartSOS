@@ -34,9 +34,11 @@ wss2.on("connection", function connection(ws) {
     ws.on('message', function message(data) {
         const now = Date.now();
 
+        console.log('Data: ', data);
         const parseData = JSON.parse(data);
         let message = { date: now, sensorData: parseData.value };
         const jsonMessage = JSON.stringify(message);
+        console.log('jsonMessage: ', jsonMessage);
         sendMessage(jsonMessage);
     });
 });
