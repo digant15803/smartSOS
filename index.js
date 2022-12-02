@@ -15,13 +15,13 @@ const users = new Set();
  We take note of the clients that initiated connection and saved it in our list
  */
 wss1.on("connection", function connection(socket) {
-  console.log("wss1:: User connected");
-  const userRef = {
-    socket: socket,
-    connectionDate: Date.now(),
-  };
-  console.log("Adding to set");
-  users.add(userRef);
+    console.log("wss1:: User connected");
+    const userRef = {
+        socket: socket,
+        connectionDate: Date.now(),
+    };
+    console.log("Adding to set");
+    users.add(userRef);
 });
 
 /*
@@ -30,15 +30,15 @@ wss1.on("connection", function connection(socket) {
  Upon receiving the sensor read, we broadcast it to all the client listener
 */
 wss2.on("connection", function connection(ws) {
-  console.log("wss2:: socket connection ");
-  ws.on('message', function message(data) {
-      const now = Date.now();
+    console.log("wss2:: socket connection ");
+    ws.on('message', function message(data) {
+        const now = Date.now();
 
-      const parseData = JSON.parse(data);
-      let message = { date: now, sensorData: parseData.value };
-      const jsonMessage = JSON.stringify(message);
-      sendMessage(jsonMessage);
-  });
+        const parseData = JSON.parse(data);
+        let message = { date: now, sensorData: parseData.value };
+        const jsonMessage = JSON.stringify(message);
+        sendMessage(jsonMessage);
+    });
 });
 
 
@@ -48,27 +48,27 @@ Initial connection is on HTTP but is upgraded to websockets
 The two path "/request" and "/sendSensorData" is defined here
 */
 server.on("upgrade", function upgrade(request, socket, head) {
-  const { pathname } = parse(request.url);
-  console.log(`Path name ${pathname}`);
+    const { pathname } = parse(request.url);
+    console.log(`Path name ${pathname}`);
 
-  if (pathname === "/request") {
-    wss1.handleUpgrade(request, socket, head, function done(ws) {
-      wss1.emit("connection", ws, request);
-    });
-  } else if (pathname === "/sendSensorData") {
-    wss2.handleUpgrade(request, socket, head, function done(ws) {
-      wss2.emit("connection", ws, request);
-    });
-  } else {
-    socket.destroy();
-  }
+    if (pathname === "/request") {
+        wss1.handleUpgrade(request, socket, head, function done(ws) {
+            wss1.emit("connection", ws, request);
+        });
+    } else if (pathname === "/sendSensorData") {
+        wss2.handleUpgrade(request, socket, head, function done(ws) {
+            wss2.emit("connection", ws, request);
+        });
+    } else {
+        socket.destroy();
+    }
 });
 
-server.listen(8080);
+server.listen(8080, () => console.log("Server is On"));
 
 const sendMessage = (message) => {
-  // console.log("Sending messages to users!");
-  for (const user of users) {
-    user.socket.send(message);
-  }
+    // console.log("Sending messages to users!");
+    for (const user of users) {
+        user.socket.send(message);
+    }
 };
