@@ -64,7 +64,7 @@ server.on("upgrade", function upgrade(request, socket, head) {
     }
 });
 
-server.listen(8080, () => console.log("Server is On"));
+server.listen(process.env.PORT || 8080, () => console.log("Server is On"));
 
 const sendMessage = (message) => {
     // console.log("Sending messages to users!");
