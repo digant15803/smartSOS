@@ -32,13 +32,10 @@ wss1.on("connection", function connection(socket) {
 wss2.on("connection", function connection(ws) {
     console.log("wss2:: socket connection ");
     console.log('now data will print- ');
-    console.log(ws);
     ws.on('message', function message(data) {
         const now = Date.now();
 
-        console.log('Data: ', data);
         const parseData = JSON.parse(data);
-        console.log('Parsed Data- ', parseData);
         // console.log(parseData);
         // let message = { date: now, SpO2: parseData.spo2, heartRate:parseData.heartRate};
         let message = { date: now, sensorData: parseData.value };
