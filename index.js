@@ -32,6 +32,7 @@ wss1.on("connection", function connection(socket) {
 wss2.on("connection", function connection(ws) {
     console.log("wss2:: socket connection ");
     console.log('now data will print- ');
+    console.log(ws);
     ws.on('message', function message(data) {
         const now = Date.now();
 
