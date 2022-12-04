@@ -36,7 +36,7 @@ wss2.on("connection", function connection(ws) {
         const now = Date.now();
 
         const parseData = JSON.parse(data);
-        // console.log(parseData);
+        console.log(parseData);
         let message = { date: now, SpO2: parseData.SpO2, heartRate:parseData.heartRate};
         // let message = { date: now, sensorData: parseData.value };
         const jsonMessage = JSON.stringify(message);
