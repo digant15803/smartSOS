@@ -38,7 +38,8 @@ void loop() {
 
     pox.update();
 
-    if (millis() - tsLastReport > REPORTING_PERIOD_MS && ((pox.getHeartRate()>0 && pox.getSpO2()!=0)||(pox.getHeartRate()==0 && pox.getSpO2()==0)) && pox.getHeartRate()<220) {
+    if (millis() - tsLastReport > REPORTING_PERIOD_MS && ((pox.getHeartRate()>0 && pox.getSpO2()!=0)||
+            (pox.getHeartRate()==0 && pox.getSpO2()==0)) && pox.getHeartRate()<220) {
         String reading= "";
         String hr="",sp="";
         Serial.print("Heart rate:");
